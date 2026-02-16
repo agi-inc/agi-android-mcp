@@ -1,1 +1,141 @@
 # AGI Android MCP Server
+
+Control any Android phone from Claude, Cursor, or any MCP client — via ADB.
+
+```
+LLM  -->  MCP (stdio)  -->  agi-android-mcp  -->  ADB  -->  Android Device
+```
+
+No proprietary dependencies. Works with any Android phone that has USB debugging enabled.
+
+## Prerequisites
+
+- **Python 3.10+**
+- **ADB** installed and in PATH (`brew install android-platform-tools` on macOS)
+- **USB debugging** enabled on your Android phone (Settings > Developer options > USB debugging)
+- Phone connected via USB and authorized (`adb devices` should show your device)
+
+## Quick Start
+
+```bash
+# Install
+pip install .
+
+# Verify ADB connection
+adb devices
+
+# Run as MCP server (used by Claude Code, Cursor, etc.)
+agi-android-mcp
+```
+
+## Configure in Claude Code
+
+Add to your Claude Code MCP settings (`~/.claude/claude_code_config.json` or project `.mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "android": {
+      "command": "agi-android-mcp",
+      "env": {}
+    }
+  }
+}
+```
+
+## Configure in Cursor
+
+Add to your Cursor MCP settings (`.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "android": {
+      "command": "agi-android-mcp",
+      "env": {}
+    }
+  }
+}
+```
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ADB_PATH` | Auto-detected | Path to `adb` binary |
+| `ADB_SERIAL` | (none) | Target a specific device by serial number |
+
+If you have multiple devices connected, set `ADB_SERIAL` to target a specific one:
+
+```json
+{
+  "mcpServers": {
+    "android": {
+      "command": "agi-android-mcp",
+      "env": {
+        "ADB_SERIAL": "XXXXXXXXXXXXXX"
+      }
+    }
+  }
+}
+```
+
+## Tools (18)
+
+| Tool | Description |
+|------|-------------|
+| `screenshot` | Take a screenshot, returned as PNG image |
+| `get_screen_size` | Get physical screen dimensions in pixels |
+| `tap(x, y)` | Tap at pixel coordinates |
+| `double_tap(x, y)` | Double-tap at pixel coordinates |
+| `long_press(x, y)` | Long-press at pixel coordinates (1s hold) |
+| `type_text(text)` | Type text into focused input field |
+| `press_key(key)` | Press a key (enter, backspace, delete, tab, space, home, back, etc.) |
+| `swipe(direction)` | Swipe up/down/left/right from screen center |
+| `drag(start_x, start_y, end_x, end_y)` | Drag between two points |
+| `press_home()` | Press the Home button |
+| `press_back()` | Press the Back button |
+| `open_notifications()` | Open the notification shade |
+| `open_quick_settings()` | Open quick settings panel |
+| `launch_app(package)` | Launch an app by package name |
+| `get_current_app()` | Get the currently visible app/activity |
+| `list_installed_apps()` | List third-party installed packages |
+| `shell(command)` | Run any ADB shell command |
+| `get_device_info()` | Get device model, Android version, screen size, battery |
+
+## Demo
+
+The included `demo.py` runs an agentic loop: screenshot -> Claude decides action -> execute via ADB -> repeat.
+
+```bash
+pip install anthropic
+ANTHROPIC_API_KEY=sk-... python demo.py "Open Chrome and search for cats"
+```
+
+Options:
+
+```bash
+python demo.py "Open Settings" --model claude-sonnet-4-5-20250929 --steps 30
+```
+
+## How It Works
+
+1. The MCP server starts and communicates over stdio (standard MCP transport)
+2. When an MCP client (Claude Code, Cursor, etc.) calls a tool, the server translates it into an `adb` subprocess call
+3. Screenshots use `adb exec-out screencap -p` to capture the screen as PNG
+4. Input actions use `adb shell input tap/swipe/text/keyevent`
+5. App management uses `adb shell am`, `adb shell pm`, `adb shell monkey`
+
+## Development
+
+```bash
+# Install in development mode
+pip install -e .
+
+# Verify tools are registered
+python -c "from agi_android_mcp.server import mcp; print(len(mcp._tool_manager._tools), 'tools')"
+```
+
+## License
+
+MIT
