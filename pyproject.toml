@@ -4,14 +4,35 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agi-android-mcp"
-version = "0.1.0"
+version = "0.0.1"
 description = "Control any Android phone from Claude, Cursor, or any MCP client — via ADB"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
+authors = [
+    { name = "AGI Inc", email = "tech@agi.tech" },
+]
+keywords = ["android", "mcp", "adb", "llm", "claude", "automation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Testing",
+]
 dependencies = [
     "mcp[cli]>=1.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/agi-inc/agi-android-mcp"
+Repository = "https://github.com/agi-inc/agi-android-mcp"
+Issues = "https://github.com/agi-inc/agi-android-mcp/issues"
 
 [project.scripts]
 agi-android-mcp = "agi_android_mcp.server:main"
