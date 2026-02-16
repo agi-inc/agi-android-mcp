@@ -17,46 +17,64 @@ No proprietary dependencies. Works with any Android phone that has USB debugging
 
 ## Quick Start
 
+### 1. Install
+
 ```bash
-# Install
+git clone https://github.com/agi-inc/agi-android-mcp.git
+cd agi-android-mcp
 pip install .
+```
 
-# Verify ADB connection
+### 2. Connect your phone
+
+```bash
+# Verify ADB sees your device
 adb devices
-
-# Run as MCP server (used by Claude Code, Cursor, etc.)
-agi-android-mcp
+# Should show something like:
+#   XXXXXXXXXXXXXX    device
 ```
 
-## Configure in Claude Code
+### 3. Add to Claude Code
 
-Add to your Claude Code MCP settings (`~/.claude/claude_code_config.json` or project `.mcp.json`):
+Add to `~/.claude/claude_code_config.json`:
 
 ```json
 {
   "mcpServers": {
     "android": {
-      "command": "agi-android-mcp",
-      "env": {}
+      "command": "agi-android-mcp"
     }
   }
 }
 ```
 
-## Configure in Cursor
+Restart Claude Code. You'll see the Android tools available. Just tell Claude:
 
-Add to your Cursor MCP settings (`.cursor/mcp.json`):
+> "Take a screenshot of my phone"
+
+> "Open Chrome and search for the weather"
+
+> "Launch Settings and turn on dark mode"
+
+Claude will take screenshots, reason about the UI, and tap/type/swipe to accomplish the task.
+
+### 3b. Add to Cursor (alternative)
+
+Add to `.cursor/mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "android": {
-      "command": "agi-android-mcp",
-      "env": {}
+      "command": "agi-android-mcp"
     }
   }
 }
 ```
+
+### 3c. Add to any MCP client
+
+The server uses stdio transport. Just run `agi-android-mcp` as the command — it speaks MCP over stdin/stdout.
 
 ## Environment Variables
 
