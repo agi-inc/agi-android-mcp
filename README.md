@@ -31,16 +31,8 @@ adb devices
 
 ### 3. Add to Claude Code
 
-Add to `~/.claude/claude_code_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "android": {
-      "command": "agi-android-mcp"
-    }
-  }
-}
+```bash
+claude mcp add android -- agi-android-mcp
 ```
 
 Restart Claude Code. That's it. Tell Claude:
